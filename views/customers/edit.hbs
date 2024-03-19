@@ -23,6 +23,16 @@
             {{/each}}
         </select>
     </div>
+    <div>
+        <label>Employees Handling:</label>
+        <select class="form-select" aria-label="Select Employees" name="employees" multiple>
+            {{#each employees}}
+                <option value="{{this.employee_id}}" 
+                {{#inArray ../employeeIds this.employee_id}}selected{{/inArray}} >
+                    {{this.first_name}} {{last_name}}</option>
+            {{/each}}
+        </select>
+    </div>
     <input type="submit" class="btn btn-primary my-4" value="Edit Customer">
 </form>
 

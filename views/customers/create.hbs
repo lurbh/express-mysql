@@ -22,6 +22,14 @@
             {{/each}}
         </select>
     </div>
+    <div>
+        <label>Employees Handling:</label>
+        <select class="form-select" aria-label="Select Employees" name="employees" multiple>
+            {{#each employees}}
+                <option value="{{this.employee_id}}">{{this.first_name}} {{last_name}}</option>
+            {{/each}}
+        </select>
+    </div>
     <input type="submit" class="btn btn-primary my-4" value="Create Customer">
 </form>
 {{/block}}
