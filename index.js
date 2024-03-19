@@ -67,7 +67,6 @@ async function main()
         let [customer] = await connection.execute(query);
         let [companies] = await connection.execute('SELECT * FROM Companies');
         const customerToEdit = customer[0];
-        console.log(customerToEdit);
         res.render('customers/edit', {
             'customer' : customerToEdit,
             companies
@@ -79,10 +78,12 @@ async function main()
         const customer_id = req.params.customer_id;
         const {first_name,last_name,rating,company_id} = req.body;
         let query = `UPDATE Customers SET 
-        first_name = ${first_name},
-        last_name = ${last_name},
+        first_name = "${first_name}",
+        last_name = "${last_name}",
         rating = ${rating},
-        company_id = ${company_id}`
+        company_id = ${company_id}
+        WHERE customer_id = ${customer_id};`
+        await connection.execute(query);
         res.redirect("/customers")
     });
 
