@@ -1,0 +1,29 @@
+{{#extends "base"}}
+{{#block "content"}}
+<h2>Create Customers</h2>
+<form method="post">
+    <div>
+        <label>First Name:</label>
+        <input type="text" class="form-control" name="first_name">
+    </div>
+    <div>
+        <label>Last Name:</label>
+        <input type="text" class="form-control" name="last_name">
+    </div>
+    <div>
+        <label>Rating:</label>
+        <input type="number" class="form-control" name="rating">
+    </div>
+    <div>
+        <label>Company:</label>
+        <select class="form-select" aria-label="Select Company" name="company_id">
+            {{#each companies}}
+                <option value="{{this.company_id}}">{{this.name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <input type="submit" class="btn btn-primary my-4" value="Create Customer">
+</form>
+{{/block}}
+
+{{/extends}}

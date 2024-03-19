@@ -13,9 +13,14 @@ app.use(express.urlencoded({extended:false}));
 waxOn.on(hbs.handlebars);
 waxOn.setLayoutPath('./views/layouts');
 
+require('handlebars-helpers')({
+    handlebars: hbs.handlebars
+})
+
 let connection;
 
-async function main() {
+async function main() 
+{
     connection = await createConnection({
         'host': process.env.DB_HOST,
         'user': process.env.DB_USER,
@@ -23,15 +28,82 @@ async function main() {
         'password': process.env.DB_PASSWORD
     })
 
-    app.get('/', (req,res) => {
+    app.get('/', function(req,res) 
+    {
         res.send('Hello, World!');
     });
 
-    app.get('/customers', async (req,res) => {
-        let [customers] = await connection.execute('SELECT * FROM Customers INNER JOIN Companies ON Customers.company_id = Companies.company_id');
-        res.render('customers', {
-            'customers': customers
+    app.get('/customers', async function (req,res)  
+    {
+        let [customers] = await connection.execute(`SELECT Customers.*, Companies.name as company_name FROM Customers 
+        INNER JOIN Companies ON Customers.company_id = Companies.company_id ORDER BY Customers.first_name`);
+        res.render('customers/index', {
+            customers
         })
+    });
+
+    app.get('/customers/create', async function (req,res) 
+    {
+        let [companies] = await connection.execute('SELECT * FROM Companies');
+        res.render('customers/create', {
+           companies
+        })
+    });
+
+    app.post('/customers/create', async function (req,res) 
+    {
+        const {first_name,last_name,rating,company_id} = req.body;
+        let query = `INSERT INTO Customers(first_name,last_name,rating,company_id) 
+            VALUES("${first_name}","${last_name}",${rating},${company_id})`;
+        // res.send(query);
+        await connection.execute(query);
+        res.redirect('/customers');
+    });
+
+    app.get('/customers/edit/:customer_id', async function (req,res) 
+    {
+        const customer_id = req.params.customer_id;
+        let query = `SELECT * FROM Customers WHERE customer_id = ${customer_id}`;
+        let [customer] = await connection.execute(query);
+        let [companies] = await connection.execute('SELECT * FROM Companies');
+        const customerToEdit = customer[0];
+        console.log(customerToEdit);
+        res.render('customers/edit', {
+            'customer' : customerToEdit,
+            companies
+        })
+    });
+
+    app.post('/customers/edit/:customer_id', async function (req,res) 
+    {
+        const customer_id = req.params.customer_id;
+        const {first_name,last_name,rating,company_id} = req.body;
+        let query = `UPDATE Customers SET 
+        first_name = ${first_name},
+        last_name = ${last_name},
+        rating = ${rating},
+        company_id = ${company_id}`
+        res.redirect("/customers")
+    });
+
+    app.get('/customers/delete/:customer_id', async function (req,res) 
+    {
+        const customer_id = req.params.customer_id;
+        let query = `SELECT * FROM Customers WHERE customer_id = ${customer_id}`;
+        let [customer] = await connection.execute(query);
+        const customerToDelete = customer[0];
+        res.render('customers/delete', {
+            'customer' : customerToDelete
+        })
+    });
+
+    app.post('/customers/delete/:customer_id', async function (req,res) 
+    {
+        const customer_id = req.params.customer_id;
+
+        let query = `DELETE FROM Customers WHERE customer_id = ${customer_id}`;
+        await connection.execute(query);
+        res.redirect("/customers")
     });
 }
 

@@ -1,0 +1,14 @@
+{{#extends "base"}}
+{{#block "content"}}
+<h2>Delete Customers</h2>
+<form method="post">
+    <div class="alert alert-danger">
+        Are you sre you want to delete Customer {{customer.first_name}} {{customer.last_name}}
+    </div>  
+    <a href="/customers" class="btn btn-primary">Cancel</a>
+    <input type="submit" class="btn btn-danger" value="Delete Customer">
+</form>
+
+{{/block}}
+
+{{/extends}}
